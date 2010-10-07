@@ -50,35 +50,35 @@ mount -o $1 /mnt/secure/asec -t vfat
 mount -o $1 /mnt/sdcard/.android_secure -t tmpfs
 }
 
-launchCFStweaks()
+ launchCFStweaks()
 {
-navPID=`pidof "com.google.android.apps.maps:driveabout"`
-if [ "$navPID" ] 
- then 
- disableCFStweaks "Disabling CFS Tweaks, GPS Navigation detected.";
- else
- if [ "$CFSstate" != "enabled" ] 
- then
- mount -t debugfs none /sys/kernel/debug
- log "collin_ph: Changed sched_features (CFS Tweaks Enabled)"
- echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
- umount /sys/kernel/debug
- CFSstate="enabled"
- fi
-fi
+# navPID=`pidof "com.google.android.apps.maps:driveabout" "com.google.android.apps.maps"`
+# if [ "$navPID" ] 
+ # then 
+ # disableCFStweaks "Disabling CFS Tweaks, GPS Navigation detected.";
+ # else
+ # if [ "$CFSstate" != "enabled" ] 
+ # then
+ # mount -t debugfs none /sys/kernel/debug
+ # log "collin_ph: Changed sched_features (CFS Tweaks Enabled)"
+ # echo "NO_NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
+ # umount /sys/kernel/debug
+ # CFSstate="enabled"
+ # fi
+# fi
 
-}
+ }
 disableCFStweaks()
-{
-if [ "$CFSstate" != "disabled" ]
-then
-mount -t debugfs none /sys/kernel/debug
-log "collin_ph: Changed sched_features $1"
-echo "NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
-umount /sys/kernel/debug
-CFSstate="disabled"
-fi
-}
+ {
+# if [ "$CFSstate" != "disabled" ]
+# then
+# mount -t debugfs none /sys/kernel/debug
+# log "collin_ph: Changed sched_features $1"
+# echo "NEW_FAIR_SLEEPERS" > /sys/kernel/debug/sched_features
+# umount /sys/kernel/debug
+# CFSstate="disabled"
+# fi
+ }
 
 increase_battery()
 {
@@ -97,6 +97,8 @@ echo 0 > /proc/sys/vm/dirty_writeback_centisecs
 echo 60 > /proc/sys/vm/dirty_background_ratio
 echo 95 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
+echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo $max_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 echo $min_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
@@ -119,6 +121,8 @@ echo 250 > /proc/sys/vm/dirty_writeback_centisecs
 echo 10 > /proc/sys/vm/dirty_background_ratio
 echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
+echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo $max_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 echo $min_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
@@ -140,6 +144,8 @@ echo 500 > /proc/sys/vm/dirty_writeback_centisecs
 echo 10 > /proc/sys/vm/dirty_background_ratio
 echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
+echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo $max_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 echo $min_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold

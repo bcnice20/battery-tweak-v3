@@ -22,6 +22,20 @@ if [ "$who" != "root" ]
  fi
 fi
 
+show_available_schedulers()
+{
+echoit "Available schedulers"
+cat /sys/block/mtdblock3/queue/scheduler
+echo ""
+}
+
+show_available_governors()
+{
+echoit "Available Governors:"
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors
+echoit ""
+}
+
 show_freq_table()
 {
 echoit "Available Frequencies:"
@@ -75,31 +89,28 @@ CFStweaks=0
 enabled=1
 cpu_max_underclock_perc=33
 cpu_limiting_method=1
-max_freq_on_battery=691200
-max_freq_on_USBpower=691200
+max_freq_on_battery=998400
+max_freq_on_USBpower=998400
 polling_interval_on_battery=60
 polling_interval_on_USBpower=15
 polling_interval_on_power=15
 min_freq_on_battery=245000
 min_freq_on_power=245000
 min_freq_on_USBpower=245000
-
-
-
 }
 
 
 restart()
 {
 echoit "Starting batt.sh"
-#nohup /system/bin/batt.sh 2>/dev/nul &
+#nohup /system/bin/batt.sh 2>/dev/null &
 start collin_ph
 t=`pidof batt.sh`
 if [ "$t" ]
    then
 	 echoit "Started"
    else
-	 nohup /system/bin/batt.sh 2>/dev/nul &
+	 nohup /system/bin/batt.sh 2>/dev/null &
 	 echoit "NOTE: when you exit ADB or terminal, you may have to hit CTRL-C"
 fi
 
@@ -126,6 +137,48 @@ case $new_cpu_limiting_method in
         "2") cpu_limiting_method=2;;
 				*) echoit "setting unchanged";;
 esac
+
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit "The cpu scaling governor controls how/when your cpu scales on the frequency table"
+echoit "";
+
+show_available_governors
+echoit "Make a choice and hit enter, or leave blank to leave unchanged [$scaling_governor]"
+read new_scaling_governor
+echoit ""
+tscale=$scaling_governor
+if [ "$new_scaling_governor" ] 
+   then 
+   tscale=$new_scaling_governor
+fi
+scaling_governor=$tscale
+
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit ""
+echoit "The cpu scheduler controls how the system tasks are scheduled"
+echoit "";
+
+show_available_schedulers
+echoit "Make a choice and hit enter, or leave blank to leave unchanged [$cpu_scheduler]"
+read new_cpu_scheduler
+echoit ""
+tsched=$cpu_scheduler
+if [ "$new_cpu_scheduler" ] 
+   then 
+   tsched=$new_cpu_scheduler
+fi
+cpu_scheduler=$tsched
 
 echoit ""
 echoit ""
@@ -309,21 +362,21 @@ echoit ""
 save_settings
 }
 
-load_768()
+load_1152()
 {
-echoit "Loading 768mhz defaults"
+echoit "Loading 1115mhz defaults"
 load_defaults
-max_freq_on_power=768000
-max_freq_on_USBpower=768000
+max_freq_on_power=1152000
+max_freq_on_USBpower=1115200
 save_settings
 }
 
-load_691()
+load_998()
 {
-echoit "Loading 691mhz defaults"
+echoit "Loading 998mhz defaults"
 load_defaults
-max_freq_on_power=691200
-max_freq_on_USBpower=691200
+max_freq_on_power=998400
+max_freq_on_USBpower=998400
 save_settings
 }
 
@@ -354,6 +407,8 @@ echo "polling_interval_on_battery=$polling_interval_on_battery" >> /system/etc/b
 echo "polling_interval_on_power=$polling_interval_on_power" >> /system/etc/batt.conf
 echo "polling_interval_on_USBpower=$polling_interval_on_USBpower" >> /system/etc/batt.conf
 echo "cpu_max_underclock_perc=$cpu_max_underclock_perc " >> /system/etc/batt.conf
+echo "scaling_governor=$scaling_governor" >> /system/etc/batt.conf
+echo "cpu_scheduler=$cpu_scheduler" >> /system/etc/batt.conf
 mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
 
 echoit ""
@@ -385,8 +440,8 @@ echoit ""
 echoit ""
 
 echoit "Please choose an option and press enter."
-echoit "[1] Revert to 768mhz defaults and exit"
-echoit "[2] Revert to 691mhz defaults and exit"
+echoit "[1] Revert to 1152mhz defaults and exit"
+echoit "[2] Revert to 998mhz defaults and exit"
 echoit "[3] Customize settings"
 
 
@@ -409,8 +464,8 @@ echoit ""
 echoit ""
 
   case $choice in
-        "1") load_768;;
-        "2") load_691;;
+        "1") load_1152;;
+        "2") load_998;;
 				"3") customize;;
 				"4") enabled=`toggle $enabled`;;
 				"5") CFStweaks=`toggle $CFStweaks`;;

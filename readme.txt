@@ -1,0 +1,1 @@
+collin_ph's Battery Tweaks ported to the EVO (supersonic)

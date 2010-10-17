@@ -4,8 +4,8 @@ echoit ()
 {
 echo "$1" | fold -s -w 45
 }
-who=`whoami`
-if [ "$who" != "root" ]
+/system/bin/id |grep root > /dev/null 2>&1
+if [ $? -ne 0 ]
  then
  echoit "batt-cfg must be ran as root."
  echoit "Press enter to attempt to run as root"

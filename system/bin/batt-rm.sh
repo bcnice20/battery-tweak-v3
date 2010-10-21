@@ -12,6 +12,8 @@ RemoveAllFiles()
    rm /system/bin/batt-cfg;
    rm /system/etc/batt.conf;
    rm /system/bin/batt-diag;
+   egrep -v 'collin_ph|oneshot' /system/etc/init.local.rc > /system/etc/init.local.rc.tmp
+   mv /system/etc/init.local.rc.tmp /system/etc/init.local.rc
    log "collin_ph: Removed $application";
    rm /system/bin/batt-rm.sh;
    mount -o remount,ro /

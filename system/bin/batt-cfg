@@ -111,12 +111,11 @@ echoit ""
 echoit "Overclocking, tethering, and high usage can lead to overheating which may damage your battery in the long run. Adjusting the Max Temperature for which to cause a max frequency override will ensure the safety of your battery. Would you like to activate it? [y/n] [$MaxTempEnable]."
 read new_MaxTempEnable
 echoit ""
-if [ "$new_MaxTempEnable" = "y" ]
-   then
-	MaxTempEnable=$new_MaxTempEnable
-else
-   echoit "Temperature Management not enabled"
-fi
+case $new_MaxTempEnable in
+           "y") MaxTempEnable=y;;
+           "n") MaxTempEnable=n;;
+             *) echo "Settings unchanged";;
+esac
 
 echoit "Please set the desired max temperature at which you will allow your devices battery to run at or leave it unchanged. This value is the temperature in Celsius * 10 [$MaxTemp]"
 read new_MaxTemp

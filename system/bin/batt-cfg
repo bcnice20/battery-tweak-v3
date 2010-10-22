@@ -85,7 +85,7 @@ load_defaults()
 audio_fix=0
 MaxTempEnable=n
 MaxTemp=450
-MaxFreqOverride=537600
+MaxFreqOverride=768000
 MinFreqOverride=245760
 MOUNToptions=1
 CFStweaks=0
@@ -97,9 +97,9 @@ max_freq_on_USBpower=998400
 polling_interval_on_battery=60
 polling_interval_on_USBpower=15
 polling_interval_on_power=15
-min_freq_on_battery=245000
-min_freq_on_power=245000
-min_freq_on_USBpower=245000
+min_freq_on_battery=245760
+min_freq_on_power=245760
+min_freq_on_USBpower=245760
 }
 
 TempManagement()
@@ -421,10 +421,10 @@ save_settings
 
 load_1152()
 {
-echoit "Loading 1115mhz defaults"
+echoit "Loading 1152mhz defaults"
 load_defaults
 max_freq_on_power=1152000
-max_freq_on_USBpower=1115200
+max_freq_on_USBpower=1152000
 save_settings
 }
 

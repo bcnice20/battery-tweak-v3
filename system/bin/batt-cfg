@@ -49,7 +49,7 @@ echoit ""
 #this is only here in case the person upgraded from a prior version
 #sets sensible defaults in that case
 audio_fix=0
-LEDfix=1
+MaxTempEnable=n
 CFStweaks=0
 MOUNToptions=0
 enabled=1
@@ -83,7 +83,9 @@ fi
 load_defaults()
 {
 audio_fix=0
-LEDfix=1
+MaxTempEnable=n
+MaxTemp=450
+MaxFreqOverride=537600
 MOUNToptions=1
 CFStweaks=0
 enabled=1
@@ -99,6 +101,43 @@ min_freq_on_power=245000
 min_freq_on_USBpower=245000
 }
 
+TempManagement()
+{
+echoit ""
+echoit ""
+echoit ""
+
+echoit "Overclocking, tethering, and high usage can lead to overheating which may damage your battery in the long run. Adjusting the Max Temperature for which to cause a max frequency override will ensure the safety of your battery. Would you like to activate it? [y/n] [$MaxTempEnable]."
+read new_MaxTempEnable
+echoit ""
+if [ "$new_MaxTempEnable" = "y" ]
+   then
+	MaxTempEnable=$new_MaxTempEnable
+else
+   echoit "Temperature Management not enabled"
+fi
+
+echoit "Please set the desired max temperature at which you will allow your devices battery to run at or leave it unchanged. This value is the temperature in Celsius * 10 [$MaxTemp]"
+read new_MaxTemp
+echoit ""
+tmaxtemp=$MaxTemp
+if [ "$new_MaxTemp" ] 
+   then
+	tmaxtemp=$new_MaxTemp
+	MaxTemp=$tmaxtemp	 
+fi
+
+echoit "Now please set the desired frequency for which to override the max_frequency to or leave unchanged [$MaxFreqOverride]"
+read new_MaxFreqOverride
+echoit ""
+tmaxfreq=$MaxFreqOverride
+if [ "$new_MaxFreqOverride" ]
+   then
+	tmaxfreq=$new_MaxFreqOverride
+	MaxFreqOverride=$tmaxfreq
+	save_settings;
+fi
+}
 
 restart()
 {
@@ -395,7 +434,9 @@ echo "audio_fix=$audio_fix" > /system/etc/batt.conf
 echo "CFStweaks=$CFStweaks" >> /system/etc/batt.conf
 echo "MOUNToptions=$MOUNToptions" >>  /system/etc/batt.conf
 echo "enabled=$enabled" >> /system/etc/batt.conf
-echo "LEDfix=$LEDfix" >> /system/etc/batt.conf
+echo "MaxTemp=$MaxTemp" >> /system/etc/batt.conf
+echo "MaxTempEnable=$MaxTempEnable" >> /system/etc/batt.conf
+echo "MaxFreqOverride=$MaxFreqOverride" >> /system/etc/batt.conf
 echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
 echo "min_freq_on_battery=$min_freq_on_battery" >> /system/etc/batt.conf
 echo "max_freq_on_battery=$max_freq_on_battery" >> /system/etc/batt.conf
@@ -449,14 +490,13 @@ disp=`get_disp $enabled`
 echoit "[4] $disp Battery Tweak Entirely"
 disp=`get_disp $CFStweaks`
 echoit "[5] $disp CFS Tweaks "
-disp=`get_disp $LEDfix`
-echoit "[6] $disp LED Fix (If LED Stuck)"
 disp=`get_disp $MOUNToptions`
-echoit "[7] $disp Disk Boost"
+echoit "[6] $disp Disk Boost"
 disp=`get_disp $audio_fix`
 disp2=`toggle $audio_fix`
 disp2=`get_disp $disp2`
-echoit "[8] $disp Audio Fix ($disp2 Stagefright)"
+echoit "[7] $disp Audio Fix ($disp2 Stagefright)"
+echoit "[8] Temperature Management"
 echoit "[9] Save Changes & Exit"
 echoit "[Enter]: Exit Without Saving Changes"
 read choice
@@ -469,9 +509,9 @@ echoit ""
 				"3") customize;;
 				"4") enabled=`toggle $enabled`;;
 				"5") CFStweaks=`toggle $CFStweaks`;;
-				"6") LEDfix=`toggle $LEDfix`;;
-        "7") MOUNToptions=`toggle $MOUNToptions`;;
-				"8") audio_fix=`toggle $audio_fix`;;
+        "6") MOUNToptions=`toggle $MOUNToptions`;;
+				"7") audio_fix=`toggle $audio_fix`;;
+				"8") TempManagement;;
 				"9") save_settings;;
 				*) echoit "Exiting. No Changes Saved"
 				   exit;; 

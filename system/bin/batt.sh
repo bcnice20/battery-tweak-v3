@@ -203,6 +203,7 @@ while [ 1 ]
 do
 charging_source=$(cat /sys/class/power_supply/battery/charging_source);
 capacity=$(cat /sys/class/power_supply/battery/capacity);
+CurrentTemp=$(cat /sys/class/power_supply/battery/batt_temp);
 
 
 sleep $current_polling_interval
@@ -239,6 +240,18 @@ if [ "$charging_source" = "0" ]
        "2") set_powersave_bias;;
     esac
 
+  fi
+fi
+
+if [ "$MaxTempEnable" = "y" ]
+  then
+  if [ "$CurrentTemp" -gt "$MaxTemp" ]
+	then
+	echo $MaxFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	log "collin_ph: Temperatures too high, Max Frequencies override"
+  else
+	#log "collin_ph: Temperatures are safe, Max Frequencies unchanged"
+	#Don't want to spam the logcat
   fi
 fi
 

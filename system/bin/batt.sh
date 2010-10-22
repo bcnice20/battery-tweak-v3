@@ -85,11 +85,6 @@ increase_battery()
 log "collin_ph: Increasing Battery"
 #New Performance Tweaks
 mount -o remount,rw -t yaffs2 /dev/block/mtdblock3
-if [ $LEDfix ] 
-   then
-   echo 0 > /sys/class/leds/amber/brightness
-   echo 0 > /sys/class/leds/green/brightness
-fi
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
 echo 0 > /proc/sys/vm/dirty_expire_centisecs
@@ -99,10 +94,15 @@ echo 95 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
-echo $max_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-echo $min_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
+
+if [ "$MaxTempEnable" = "n" ]
+  then
+	echo $max_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	echo $min_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+fi
+
 last_capacity=0;
 current_max_clock=$max_freq_on_battery
 mount -o remount,ro -t yaffs2 /dev/block/mtdblock3
@@ -123,10 +123,15 @@ echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
-echo $max_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-echo $min_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
+
+if [ "$MaxTempEnable" = "n" ]
+  then
+	echo $max_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	echo $min_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+fi
+
 last_capacity=0;
 current_max_clock=$max_clock_on_USBpower
 #mount -o remount,ro /
@@ -146,10 +151,15 @@ echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
-echo $max_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-echo $min_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
+
+if [ "$MaxTempEnable" = "n" ]
+  then
+	echo $max_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	echo $min_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+fi
+
 last_capacity=0;
 current_max_clock=$max_clock_on_power
 #mount -o remount,ro /
@@ -248,6 +258,7 @@ if [ "$MaxTempEnable" = "y" ]
   if [ "$CurrentTemp" -gt "$MaxTemp" ]
 	then
 	echo $MaxFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	echo $MinFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 	log "collin_ph: Temperatures too high, Max Frequencies override"
   else
 	#log "collin_ph: Temperatures are safe, Max Frequencies unchanged"

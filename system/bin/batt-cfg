@@ -86,6 +86,7 @@ audio_fix=0
 MaxTempEnable=n
 MaxTemp=450
 MaxFreqOverride=537600
+MinFreqOverride=245760
 MOUNToptions=1
 CFStweaks=0
 enabled=1
@@ -127,15 +128,33 @@ if [ "$new_MaxTemp" ]
 	MaxTemp=$tmaxtemp	 
 fi
 
+show_freq_table
+echoit "Now please set the desired frequency for which to override the min_frequency to or leave unchanged [$MinFreqOverride]"
+read new_MinFreqOverride
+echoit ""
 echoit "Now please set the desired frequency for which to override the max_frequency to or leave unchanged [$MaxFreqOverride]"
 read new_MaxFreqOverride
 echoit ""
+
+tminfreq=$MinFreqOverride
+if [ "$new_MinFreqOverride" ]
+   then
+	tminfreq=$new_MinFreqOverride
+fi
+
 tmaxfreq=$MaxFreqOverride
 if [ "$new_MaxFreqOverride" ]
    then
 	tmaxfreq=$new_MaxFreqOverride
-	MaxFreqOverride=$tmaxfreq
-	save_settings;
+fi
+
+if [ $tmaxfreq -ge $tminfreq ]
+   then
+	 MinFreqOverride=$tminfreq
+	 MaxFreqOverride=$tmaxfreq
+	 echoit "Override CPU settings accepted."
+	 else
+	 echoit "Invalid Override CPU Settings. New Override CPU settings ignored."
 fi
 }
 
@@ -437,6 +456,7 @@ echo "enabled=$enabled" >> /system/etc/batt.conf
 echo "MaxTemp=$MaxTemp" >> /system/etc/batt.conf
 echo "MaxTempEnable=$MaxTempEnable" >> /system/etc/batt.conf
 echo "MaxFreqOverride=$MaxFreqOverride" >> /system/etc/batt.conf
+echo "MinFreqOverride=$MinFreqOverride" >> /system/etc/batt.conf
 echo "cpu_limiting_method=$cpu_limiting_method" >> /system/etc/batt.conf
 echo "min_freq_on_battery=$min_freq_on_battery" >> /system/etc/batt.conf
 echo "max_freq_on_battery=$max_freq_on_battery" >> /system/etc/batt.conf

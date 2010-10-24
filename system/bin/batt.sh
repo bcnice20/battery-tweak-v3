@@ -260,9 +260,6 @@ if [ "$MaxTempEnable" = "y" ]
 	echo $MaxFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $MinFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 	log "collin_ph: Temperatures too high, Max Frequencies override"
-  else
-	#log "collin_ph: Temperatures are safe, Max Frequencies unchanged"
-	#Don't want to spam the logcat
   fi
 fi
 

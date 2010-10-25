@@ -5,8 +5,9 @@
 #Battery Tweak Beta by collin_ph
 #configurable options
 #moved to /system/etc/batt.conf
-
 . /system/etc/batt.conf
+. /system/etc/batt-temp.conf
+
 if [ "$enabled" -gt "0" ] 
  then
 if [ "$audio_fix" -gt "0" ]
@@ -97,7 +98,7 @@ echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
-if [ "$MaxTempEnable" = "n" ]
+if [ "$OverHeatActive" = "0" ]
   then
 	echo $max_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $min_freq_on_battery > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
@@ -126,7 +127,7 @@ echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
-if [ "$MaxTempEnable" = "n" ]
+if [ "$OverHeatActive" = "0" ]
   then
 	echo $max_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $min_freq_on_USBpower > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
@@ -154,7 +155,7 @@ echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
 echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
-if [ "$MaxTempEnable" = "n" ]
+if [ "$OverHeatActive" = "0" ]
   then
 	echo $max_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $min_freq_on_power > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
@@ -257,9 +258,19 @@ if [ "$MaxTempEnable" = "y" ]
   then
   if [ "$CurrentTemp" -gt "$MaxTemp" ]
 	then
+	mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+	echo "OverHeatActive=1" > /system/etc/batt-temp.conf
+	mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
 	echo $MaxFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $MinFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-	log "collin_ph: Temperatures too high, Max Frequencies override"
+	log "collin_ph: Phone is Overheating, Max Frequencies override"
+  else
+	if [ "$OverHeatActive" != "0" ]
+	      then
+		mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+		echo "OverHeatActive=0" > /system/etc/batt-temp.conf
+		mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
+	fi
   fi
 fi
 

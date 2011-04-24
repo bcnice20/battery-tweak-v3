@@ -43,9 +43,9 @@ mount -o $1 /dev -t devpts
 mount -o $1 /proc -t proc
 mount -o $1 /sys -t sysfs
 mount -o $1 /mnt/asec -t tmpfs
-mount -o $1 /system -t yaffs2
-mount -o $1 /data -t yaffs2
-mount -o $1 /cache -t yaffs2
+mount -o $1 /system -t emmc
+mount -o $1 /data -t emmc
+mount -o $1 /cache -t emmc
 mount -o $1 /mnt/sdcard -t vfat
 mount -o $1 /mnt/secure/asec -t vfat
 mount -o $1 /mnt/sdcard/.android_secure -t tmpfs
@@ -85,7 +85,7 @@ increase_battery()
 {
 log "collin_ph: Increasing Battery"
 #New Performance Tweaks
-mount -o remount,rw -t yaffs2 /dev/block/mtdblock3
+mount -o remount,rw -t emmc /dev/block/mmcblk0
 current_polling_interval=$polling_interval_on_battery;
 echo 0 > /proc/sys/vm/swappiness
 echo 0 > /proc/sys/vm/dirty_expire_centisecs
@@ -94,7 +94,7 @@ echo 60 > /proc/sys/vm/dirty_background_ratio
 echo 95 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
+echo $cpu_scheduler > /sys/block/mmcblk0/queue/scheduler
 echo 95 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
@@ -106,7 +106,7 @@ fi
 
 last_capacity=0;
 current_max_clock=$max_freq_on_battery
-mount -o remount,ro -t yaffs2 /dev/block/mtdblock3
+mount -o remount,ro -t emmc /dev/block/mmcblk0
 log "collin_ph: Done Increasing Battery"
 }
 
@@ -123,7 +123,7 @@ echo 10 > /proc/sys/vm/dirty_background_ratio
 echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
+echo $cpu_scheduler > /sys/block/mmcblk0/queue/scheduler
 echo 45 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
@@ -151,7 +151,7 @@ echo 10 > /proc/sys/vm/dirty_background_ratio
 echo 40 > /proc/sys/vm/dirty_ratio
 echo 10 > /proc/sys/vm/vfs_cache_pressure
 echo $scaling_governor > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-echo $cpu_scheduler > /sys/block/mtdblock3/queue/scheduler
+echo $cpu_scheduler > /sys/block/mmcblk0/queue/scheduler
 echo 50 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/up_threshold
 echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/ondemand/powersave_bias
 
@@ -258,18 +258,18 @@ if [ "$MaxTempEnable" = "y" ]
   then
   if [ "$CurrentTemp" -gt "$MaxTemp" ]
 	then
-	mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+	mount -o remount,rw -t emmc /dev/block/mmcblk0 /system
 	echo "OverHeatActive=1" > /system/etc/batt-temp.conf
-	mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
+	mount -o remount,ro -t emmc /dev/block/mmcblk0 /system
 	echo $MaxFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 	echo $MinFreqOverride > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 	log "collin_ph: Phone is Overheating, Max Frequencies override"
   else
 	if [ "$OverHeatActive" != "0" ]
 	      then
-		mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+		mount -o remount,rw -t emmc /dev/block/mmcblk0 /system
 		echo "OverHeatActive=0" > /system/etc/batt-temp.conf
-		mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
+		mount -o remount,ro -t emmc /dev/block/mmcblk0 /system
 	fi
   fi
 fi

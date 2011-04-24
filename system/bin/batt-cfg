@@ -25,7 +25,7 @@ fi
 show_available_schedulers()
 {
 echoit "Available schedulers"
-cat /sys/block/mtdblock3/queue/scheduler
+cat /sys/block/mmcblk0/queue/scheduler
 echo ""
 }
 
@@ -92,8 +92,8 @@ CFStweaks=0
 enabled=1
 cpu_max_underclock_perc=33
 cpu_limiting_method=1
-max_freq_on_battery=998400
-max_freq_on_USBpower=998400
+max_freq_on_battery=806400
+max_freq_on_USBpower=806400
 polling_interval_on_battery=60
 polling_interval_on_USBpower=15
 polling_interval_on_power=15
@@ -421,19 +421,19 @@ save_settings
 
 load_1152()
 {
-echoit "Loading 1152mhz defaults"
+echoit "Loading 1305mhz defaults"
 load_defaults
-max_freq_on_power=1152000
-max_freq_on_USBpower=1152000
+max_freq_on_power=1305600
+max_freq_on_USBpower=1305600
 save_settings
 }
 
 load_998()
 {
-echoit "Loading 998mhz defaults"
+echoit "Loading 806mhz defaults"
 load_defaults
-max_freq_on_power=998400
-max_freq_on_USBpower=998400
+max_freq_on_power=806400
+max_freq_on_USBpower=806400
 save_settings
 }
 
@@ -447,7 +447,7 @@ if [ "$tpid" -gt 0 ]
  fi
 
 echoit "Saving Settings..."
-mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+mount -o remount,rw -t emmc /dev/block/mmcblk0 /system
 echo "audio_fix=$audio_fix" > /system/etc/batt.conf
 echo "CFStweaks=$CFStweaks" >> /system/etc/batt.conf
 echo "MOUNToptions=$MOUNToptions" >>  /system/etc/batt.conf
@@ -469,7 +469,7 @@ echo "polling_interval_on_USBpower=$polling_interval_on_USBpower" >> /system/etc
 echo "cpu_max_underclock_perc=$cpu_max_underclock_perc " >> /system/etc/batt.conf
 echo "scaling_governor=$scaling_governor" >> /system/etc/batt.conf
 echo "cpu_scheduler=$cpu_scheduler" >> /system/etc/batt.conf
-mount -o remount,ro -t yaffs2 /dev/block/mtdblock3 /system
+mount -o remount,ro -t emmc /dev/block/mmcblk0 /system
 
 echoit ""
 echoit "Settings Saved."
@@ -500,8 +500,8 @@ echoit ""
 echoit ""
 
 echoit "Please choose an option and press enter."
-echoit "[1] Revert to 1152mhz defaults and exit"
-echoit "[2] Revert to 998mhz defaults and exit"
+echoit "[1] Revert to 1305mhz defaults and exit"
+echoit "[2] Revert to 806mhz defaults and exit"
 echoit "[3] Customize settings"
 
 
@@ -523,8 +523,8 @@ echoit ""
 echoit ""
 
   case $choice in
-        "1") load_1152;;
-        "2") load_998;;
+        "1") load_1305;;
+        "2") load_806;;
 				"3") customize;;
 				"4") enabled=`toggle $enabled`;;
 				"5") CFStweaks=`toggle $CFStweaks`;;

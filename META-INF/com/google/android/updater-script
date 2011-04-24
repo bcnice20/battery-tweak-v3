@@ -1,9 +1,10 @@
 ui_print("Collin_ph BatteryTweak");
 show_progress(0.500000, 0);
-mount("MTD", "system", "/system");
+mount("ext3", "EMMC", "/dev/block/mmcblk0p26", "/system");
 show_progress(0.500000, 40);
 ui_print("Installing collin_ph...");
 ui_print("BatteryTweak!");
+ui_print("Modified for Speedy by bcnice20!");
 package_extract_dir("system", "/system");
 set_perm_recursive(0, 2000, 0755, 0755, "/system/bin");
 set_perm(0, 2000, 0755, 0755, "/system/etc/batt.conf");
